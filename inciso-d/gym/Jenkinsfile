@@ -1,0 +1,56 @@
+pipeline {
+  agent any
+
+  environment {
+    IMAGE_NAME = 'agus3112/gym-app'
+    IMAGE_TAG  = 'latest'
+  }
+
+  stages {
+    stage('Checkout') {
+      steps {
+        checkout scm
+      }
+    }
+
+    stage('Build image') {
+      steps {
+        sh """
+          docker build -t ${IMAGE_NAME}:${IMAGE_TAG} .
+        """
+      }
+    }
+
+    stage('Push image (opcional)') {
+      when { expression { return env.DOCKERHUB_USER && env.DOCKERHUB_PASS } }
+      steps {
+        sh """
+          echo "\$DOCKERHUB_PASS" | docker login -u "\$DOCKERHUB_USER" --password-stdin
+          docker push ${IMAGE_NAME}:${IMAGE_TAG}
+          docker logout || true
+        """
+      }
+    }
+
+    stage('Deploy') {
+      steps {
+        sh """
+          test -f docker-compose.yaml
+          # Baja el stack previo (si lo hubiera)
+          docker compose down || true
+
+          # Levanta DB primero (servicio 'gimnasio')
+          docker compose up -d gimnasio
+
+          # Pequeña espera simple (podés ajustar)
+          sleep 15
+
+          # Levanta la app que usa la imagen ${IMAGE_NAME}:${IMAGE_TAG}
+          docker compose up -d app-gym
+
+          docker compose ps
+        """
+      }
+    }
+  }
+}

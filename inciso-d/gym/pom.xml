@@ -13,6 +13,7 @@
 	<version>0.0.1-SNAPSHOT</version>
 	<name>gimnasio-sport</name>
 	<description>Proyecto Integrador de Ingeniería de Software II</description>
+    <packaging>jar</packaging>
 	<url/>
 	<licenses>
 		<license/>

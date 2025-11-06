@@ -10,9 +10,10 @@ import ar.edu.uncuyo.gimnasio_sport.service.MensajeService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.Optional;
@@ -22,7 +23,6 @@ import static org.hamcrest.Matchers.hasProperty;
 import static org.hamcrest.Matchers.samePropertyValuesAs;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.argThat;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
@@ -36,10 +36,10 @@ class MensajeControllerTest {
     @Autowired
     private MockMvc mockMvc;
 
-    @MockBean
+    @MockitoBean
     private MensajeService mensajeService;
 
-    @MockBean
+    @MockitoBean
     private UsuarioRepository usuarioRepository;
 
     private Usuario admin;
@@ -73,6 +73,7 @@ class MensajeControllerTest {
     void editarMensajeMuestraDatosDelMensaje() throws Exception {
         when(usuarioRepository.findByNombreUsuarioAndEliminadoFalse("admin")).thenReturn(Optional.of(admin));
 
+        // Autor del mensaje (entidad)
         Usuario autor = Usuario.builder()
                 .id(2L)
                 .nombreUsuario("autor")
@@ -83,18 +84,26 @@ class MensajeControllerTest {
 
         Long mensajeId = 42L;
 
-        Mensaje mensaje = new Mensaje();
-        mensaje.setId(mensajeId);
-        mensaje.setTitulo("Titulo");
-        mensaje.setTexto("Contenido");
-        mensaje.setTipoMensaje(TipoMensaje.PROMOCION);
-        mensaje.setEliminado(false);
-        mensaje.setUsuario(autor);
+        // ENTIDAD Mensaje
+        Mensaje mensajeEntity = new Mensaje();
+        mensajeEntity.setId(mensajeId);
+        mensajeEntity.setAsunto("Titulo");
+        mensajeEntity.setCuerpo("Contenido");
+        mensajeEntity.setTipo(TipoMensaje.PROMOCION);
+        mensajeEntity.setEliminado(false);
+        mensajeEntity.setUsuario(autor);
 
-        MensajeDTO dto = new MensajeDTO(mensajeId, "Titulo", "Contenido", TipoMensaje.PROMOCION, autor.getId());
+        // DTO
+        MensajeDTO dto = new MensajeDTO();
+        dto.setId(mensajeId);
+        dto.setAsunto("Titulo");
+        dto.setCuerpo("Contenido");
+        dto.setTipo(TipoMensaje.PROMOCION);
+        dto.setUsuarioId(autor.getId());
+        // nombre / email / fechaProgramada pueden quedar null si tu vista no los usa en edición
 
-        when(mensajeService.obtener(mensajeId)).thenReturn(mensaje);
-        when(mensajeService.toDto(mensaje)).thenReturn(dto);
+        when(mensajeService.obtener(mensajeId)).thenReturn(mensajeEntity);
+        when(mensajeService.toDto(mensajeEntity)).thenReturn(dto);
 
         mockMvc.perform(get("/mensajes/editar/{id}", mensajeId))
                 .andExpect(status().isOk())
@@ -110,10 +119,10 @@ class MensajeControllerTest {
         when(mensajeService.crear(any(MensajeDTO.class))).thenReturn(new Mensaje());
 
         mockMvc.perform(post("/mensajes")
-                        .param("titulo", "Promo")
-                        .param("texto", "Descuento especial")
-                        .param("tipoMensaje", TipoMensaje.PROMOCION.name())
-                        .param("usuarioId", "999")
+                        .param("asunto", "Promo")                   // <-- nombres alineados al DTO
+                        .param("cuerpo", "Descuento especial")
+                        .param("tipo", TipoMensaje.PROMOCION.name())
+                        .param("usuarioId", "999")                  // será sobreescrito por el controlador si corresponde
                         .with(csrf()))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrl("/mensajes"));
