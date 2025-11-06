@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+
+<html lang="es" xmlns:sec="http://www.thymeleaf.org/extras/spring-security" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8"/>
+    <title>Empresa</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"/>
+
+    <!-- Modern style injected (ES) -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&amp;display=swap" rel="stylesheet"/>
+    <style>
+        :root {
+            --color-primario: #264653;
+            --color-secundario: #2A9D8F;
+            --color-acento: #E76F51;
+            --fondo: #F6F8FA;
+            --texto: #2E2E2E;
+        }
+        * { box-sizing: border-box; }
+        body { font-family: 'Poppins', system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; background-color: var(--fondo); color: var(--texto); }
+        .navbar { background: linear-gradient(90deg, var(--color-primario), var(--color-secundario)); }
+        .navbar-brand, .navbar .nav-link { color: #fff !important; }
+        .card { border: none; border-radius: 18px; box-shadow: 0 6px 18px rgba(0,0,0,0.08); }
+        .card-header { background: transparent; border-bottom: 0; }
+        .btn-primary { background: linear-gradient(90deg, var(--color-secundario), #21867A); border: none; }
+        .btn-primary:hover { background: linear-gradient(90deg, #21867A, #1B6C63); }
+        .btn-outline-warning { color: #E9C46A; border-color: #E9C46A; }
+        .btn-outline-warning:hover { background-color: #E9C46A; color: #fff; }
+        .btn-outline-danger { color: var(--color-acento); border-color: var(--color-acento); }
+        .btn-outline-danger:hover { background-color: var(--color-acento); color: #fff; }
+        .form-control, .form-select, textarea { border-radius: 12px; border-color: #bfc5d2; }
+        .form-control:focus, .form-select:focus, textarea:focus {
+            border-color: var(--color-secundario) !important;
+            box-shadow: 0 0 0 0.2rem rgba(42,157,143,.25);
+        }
+        table thead { background-color: var(--color-secundario); color: #fff; }
+        table tbody tr:hover { background-color: #edfdf9; }
+        .section-title { color: var(--color-primario); font-weight: 600; }
+        footer { color: #6c757d; margin-top: 60px; }
+    </style>
+</head>
+<body class="bg-light">
+<div class="container mt-5">
+    <h2 class="text-primary mb-4" th:text="${titleEdit}">Nueva Empresa</h2>
+    <div class="alert alert-danger" role="alert" th:if="${msgError}">
+        <span th:text="${msgError}"></span>
+    </div>
+    <div class="alert alert-success" role="alert" th:if="${msgExito}">
+        <span th:text="${msgExito}"></span>
+    </div>
+    <form method="post" th:action="@{|/${nameEntityLower}/actualizar|}" th:object="${item}">
+        <!-- Solo incluir el ID si existe (modificación) -->
+        <input th:field="*{id}" th:if="*{id != null}" type="hidden"/>
+        <div class="mb-3">
+            <label class="form-label">Nombre</label>
+            <input class="form-control" placeholder="Ingrese el nombre" required="" th:field="*{nombre}" type="text"/>
+        </div>
+        <div class="d-flex justify-content-between">
+            <button class="btn btn-primary" type="submit">Guardar</button>
+            <a class="btn btn-outline-secondary" th:href="@{|/${nameEntityLower}/listar|}">Cancelar</a>
+        </div>
+    </form>
+</div>
+</body>
+</html>

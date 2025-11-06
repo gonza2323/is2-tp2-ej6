@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+
+<html lang="es" xmlns:sec="http://www.thymeleaf.org/extras/spring-security" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8"/>
+    <title>Inicio - Sistema de Contactos</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"/>
+
+    <!-- Modern style injected (ES) -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&amp;display=swap" rel="stylesheet"/>
+    <style>
+        :root {
+            --color-primario: #264653;
+            --color-secundario: #2A9D8F;
+            --color-acento: #E76F51;
+            --fondo: #F6F8FA;
+            --texto: #2E2E2E;
+        }
+        * { box-sizing: border-box; }
+        body { font-family: 'Poppins', system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; background-color: var(--fondo); color: var(--texto); }
+        .navbar { background: linear-gradient(90deg, var(--color-primario), var(--color-secundario)); }
+        .navbar-brand, .navbar .nav-link { color: #fff !important; }
+        .card { border: none; border-radius: 18px; box-shadow: 0 6px 18px rgba(0,0,0,0.08); }
+        .card-header { background: transparent; border-bottom: 0; }
+        .btn-primary { background: linear-gradient(90deg, var(--color-secundario), #21867A); border: none; }
+        .btn-primary:hover { background: linear-gradient(90deg, #21867A, #1B6C63); }
+        .btn-outline-warning { color: #E9C46A; border-color: #E9C46A; }
+        .btn-outline-warning:hover { background-color: #E9C46A; color: #fff; }
+        .btn-outline-danger { color: var(--color-acento); border-color: var(--color-acento); }
+        .btn-outline-danger:hover { background-color: var(--color-acento); color: #fff; }
+        .form-control, .form-select, textarea { border-radius: 12px; border-color: #bfc5d2; }
+        .form-control:focus, .form-select:focus, textarea:focus {
+            border-color: var(--color-secundario) !important;
+            box-shadow: 0 0 0 0.2rem rgba(42,157,143,.25);
+        }
+        table thead { background-color: var(--color-secundario); color: #fff; }
+        table tbody tr:hover { background-color: #edfdf9; }
+        .section-title { color: var(--color-primario); font-weight: 600; }
+        footer { color: #6c757d; margin-top: 60px; }
+    </style>
+</head>
+<body class="bg-light">
+<!-- NAVBAR -->
+<nav class="navbar navbar-expand-lg navbar-dark bg-primary shadow-sm">
+    <div class="container">
+        <a class="navbar-brand fw-bold" href="/">Sistema de Contactos</a>
+        <ul class="navbar-nav ms-auto">
+            <!-- Solo se muestra si el usuario NO está logueado -->
+            <li class="nav-item" sec:authorize="isAnonymous()">
+                <a class="nav-link" th:href="@{/login}">Iniciar sesión</a>
+            </li>
+            <!-- Solo se muestra si el usuario está logueado -->
+            <li class="nav-item" sec:authorize="isAuthenticated()">
+                <a class="nav-link" th:text="${usuario.cuenta}"></a>
+            </li>
+            <!-- Opción visible solo para ADMIN -->
+            <li class="nav-item" sec:authorize="hasRole('ROLE_ADMIN')">
+                <a class="nav-link" th:href="@{/usuario/listar}">Usuarios</a>
+            </li>
+            <!-- Botón de cierre de sesión -->
+            <li class="nav-item" sec:authorize="isAuthenticated()">
+                <a class="nav-link" th:href="@{/logout}">Cerrar sesión</a>
+            </li>
+        </ul>
+    </div>
+</nav>
+<!-- MAIN CONTENT -->
+<div class="container mt-5">
+    <div class="card shadow border-0 rounded-4">
+        <div class="card-body text-center py-5">
+            <h2 class="fw-bold text-primary mb-3">¡Bienvenido, <span th:text="${#authentication.name}">usuario</span>!</h2>
+            <p class="lead text-secondary mb-4">Has iniciado sesión correctamente en el sistema de gestión de contactos.</p>
+            <hr class="my-4"/>
+            <div class="d-flex justify-content-center gap-3 mt-4">
+                <a class="btn btn-outline-primary btn-lg px-4" th:href="@{/empresa/listar}">Ver Empresas</a>
+                <a class="btn btn-outline-success btn-lg px-4" th:href="@{/contacto/listar}">Ver Contactos</a>
+                <a class="btn btn-outline-warning btn-lg px-4" th:href="@{/persona/listar}">Ver Personas</a>
+                <a class="btn btn-outline-info btn-lg px-4" th:href="@{/persona-completa/alta}">Registrar Persona Completa</a>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- FOOTER -->
+<footer class="text-center mt-5 text-muted">
+    <p class="small mb-2">© 2025 Sistema de Contactos</p>
+</footer>
+</body>
+</html>
