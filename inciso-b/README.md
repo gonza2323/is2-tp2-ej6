@@ -1,0 +1,3 @@
+Se visualizaron los 2 primeros videos de la guia y posteriormente se implemento una version de dockerfile y docker-compose siguiendo la guia del video de despliegue aplicado al proyecto de Gymnasio-Sport 
+los comandos utilizados variaron de "docker build ." y "docker push ..", posteriormente comandos como "docker ps" para visualizar los contenedores y "docker down 'nombre-contenedor'" para la eliminacion de estos
+para el despliegue en local luego se debio realizar la herramienta docker-compose para realizar un despliegue compuesto por dos contenedores con "docker-compose buid" y "docker-compose up -d" para poder ejecutar en modo 'detached'
